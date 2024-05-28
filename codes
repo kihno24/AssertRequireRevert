@@ -1,0 +1,42 @@
+//  SPDX-License-Identifier: GPL-3.0 
+pragma solidity ^0.8.13;
+
+contract ProjectModule1 {
+
+address public KeenuFestin;
+uint public amount;
+
+constructor() {
+    KeenuFestin = msg.sender;
+}
+
+
+function incrementAmount(uint _newAmount) public {
+
+    require(_newAmount > 1, "Invalid Amount");
+
+    assert(msg.sender == KeenuFestin);
+
+    amount += _newAmount;
+}
+
+
+function doubleAmount() public {
+    assert(msg.sender == KeenuFestin);
+    amount *= 2;
+}
+
+
+function withdraw(uint _amount) public {
+
+    require(_amount > 1, "Invalid amount.");
+
+    assert(msg.sender == KeenuFestin);
+
+    if(_amount > amount){
+        revert("Not enough balance.");
+    }
+
+    amount -= _amount;
+}
+}   
