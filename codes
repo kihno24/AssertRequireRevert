@@ -1,37 +1,53 @@
-// SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
 
-contract StudentScores {
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-    address public student;
-    uint public totalScore;
-    uint public subjectCount;
+contract StudentInfo {
+    address public owner;
+    uint256 public studentIdNumber;
+    uint256 public studentGradeLevel;
+    uint256 public studentAge;
 
     constructor() {
-        student = msg.sender;
-        totalScore = 0;
-        subjectCount = 0;
+        owner = msg.sender;
     }
 
-    modifier onlyStudent() {
-        require(msg.sender == student, "Only the student can call this function");
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the contract owner can call this function");
         _;
     }
 
-    function addScore(uint _score) public onlyStudent {
-        require(_score > 0 && _score <= 100, "Score must be between 1 and 100");
-        totalScore += _score;
-        subjectCount += 1;
+    function setStudentId(uint256 _idNumber) public onlyOwner {
+        require(_idNumber == 170223, "Wrong student number, please input the right student number");
+        studentIdNumber = _idNumber;
     }
 
-    function averageScore() public view returns (uint) {
-        require(subjectCount > 0, "No subjects added yet");
-        return totalScore / subjectCount;
+    function setGradeLevel(uint256 _level) public onlyOwner {
+        require(_level == 10, "Wrong year level, please input the right grade level.");
+        studentGradeLevel = _level;
     }
 
-    function resetScores() public onlyStudent {
-        totalScore = 0;
-        subjectCount = 0;
+    function setStudentAge(uint256 _age) public onlyOwner {
+        require(_age == 20, "Wrong age, please input the right age for this student.");
+        studentAge = _age;
+    }
+
+    function doubleStudentAge() public onlyOwner {
+        // Assert that doubling the age does not cause an overflow
+        uint256 newAge = studentAge * 2;
+        assert(newAge > studentAge);
+        studentAge = newAge;
+    }
+
+    function withdrawAge(uint256 _age) public onlyOwner {
+        require(_age > 1, "Invalid age to withdraw.");
+        if (_age > studentAge) {
+            revert("Not enough age to withdraw.");
+        }
+        studentAge -= _age;
+    }
+
+    function getStudentInfo() public view returns (uint256, uint256, uint256) {
+        return (studentIdNumber, studentGradeLevel, studentAge);
     }
 }
-
