@@ -1,42 +1,37 @@
-//  SPDX-License-Identifier: GPL-3.0 
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
-contract ProjectModule1 {
+contract StudentScores {
 
-address public KeenuFestin;
-uint public amount;
+    address public student;
+    uint public totalScore;
+    uint public subjectCount;
 
-constructor() {
-    KeenuFestin = msg.sender;
-}
-
-
-function incrementAmount(uint _newAmount) public {
-
-    require(_newAmount > 1, "Invalid Amount");
-
-    assert(msg.sender == KeenuFestin);
-
-    amount += _newAmount;
-}
-
-
-function doubleAmount() public {
-    assert(msg.sender == KeenuFestin);
-    amount *= 2;
-}
-
-
-function withdraw(uint _amount) public {
-
-    require(_amount > 1, "Invalid amount.");
-
-    assert(msg.sender == KeenuFestin);
-
-    if(_amount > amount){
-        revert("Not enough balance.");
+    constructor() {
+        student = msg.sender;
+        totalScore = 0;
+        subjectCount = 0;
     }
 
-    amount -= _amount;
+    modifier onlyStudent() {
+        require(msg.sender == student, "Only the student can call this function");
+        _;
+    }
+
+    function addScore(uint _score) public onlyStudent {
+        require(_score > 0 && _score <= 100, "Score must be between 1 and 100");
+        totalScore += _score;
+        subjectCount += 1;
+    }
+
+    function averageScore() public view returns (uint) {
+        require(subjectCount > 0, "No subjects added yet");
+        return totalScore / subjectCount;
+    }
+
+    function resetScores() public onlyStudent {
+        totalScore = 0;
+        subjectCount = 0;
+    }
 }
-}   
+
